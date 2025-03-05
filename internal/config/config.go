@@ -8,9 +8,9 @@ import (
 )
 
 type Config struct {
-	Env         string `yaml:"env" env-default:"local"`
-	StoragePath string `yaml:"storage_path" env-required:"true"`
-	HTTPServer  `yaml:"http_server"`
+	Env           string `yaml:"env" env-default:"local"`
+	StorageConfig `yaml:"storage" env-required:"true"`
+	HTTPServer    `yaml:"http_server"`
 }
 
 type HTTPServer struct {
@@ -21,13 +21,21 @@ type HTTPServer struct {
 	//Password string `yaml:"password" env-required:"true" env:"HTTP_SERVER_PASSWORD"`
 }
 
-func MustLoad() *Config {
-	configPath := os.Getenv("CONFIG_PATH")
-	if configPath == "" {
-		log.Fatal("CONFIG_PATH is not set")
-	}
+type StorageConfig struct {
+	User     string `yaml:"user" env-required:"true"`
+	Password string `yaml:"password" env-required:"true"`
+	DBName   string `yaml:"dbname" env-required:"true"`
+	SSLmode  string `yaml:"sslmode" env-required:"true" env-default:"disable"`
+}
 
-	// check if file exists
+func MustLoad() *Config {
+	//configPath := os.Getenv("CONFIG_PATH")
+	//if configPath == "" {
+	//	log.Fatal("CONFIG_PATH is not set")
+	//}
+
+	configPath := "../../config/local.yaml"
+
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
 		log.Fatalf("config file does not exist: %s", configPath)
 	}
